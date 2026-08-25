@@ -70,7 +70,7 @@ fn directory_handles(monitoring: Vec<String>) -> Result<HashMap<String, HANDLE>,
                 FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
                 None
             ) {
-                Ok(h) => handles.insert(dir.clone(), h),
+                Ok(h) => handles.insert(dir, h),
                 Err(e) => {
                     println!("[!] CreateFileW failed with error: {}", e);
                     continue;
