@@ -123,6 +123,7 @@ fn change_detection(handles: &HashMap<String, HANDLE>) {
                 None,
             ) {
                 println!("[!] ReadDirectoryChangesW failed with error: {}", e);
+                free_context(&contexts);
                 return;
             }
         }
@@ -143,6 +144,7 @@ fn change_detection(handles: &HashMap<String, HANDLE>) {
                 Ok(_) => {
                     if overlapped.is_null() {
                         println!("[!] GetQueuedCompletionStatus returned null context");
+                        free_context(&contexts);
                         return;
                     }
 
@@ -162,14 +164,24 @@ fn change_detection(handles: &HashMap<String, HANDLE>) {
                         None,
                     ) {
                         println!("[!] ReadDirectoryChangesW failed with error: {}", e);
+                        free_context(&contexts);
                         return;
                     }
                 }
                 Err(e) => {
                     println!("[!] GetQueuedCompletionStatus failed with error: {}", e);
+                    free_context(&contexts);
                     return;
                 }
             }
+        }
+    }
+}
+
+unsafe fn free_context(vector: &Vec<*mut DirectoryContext>) {
+    unsafe {
+        for c in vector {
+            let _c = Box::from_raw(*c);
         }
     }
 }
